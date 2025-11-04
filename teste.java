@@ -28,7 +28,7 @@ public class teste {
 
         while (!fila.isEmpty()) {
             Produto p = fila.poll();
-            System.out.println("* o produto*: " + p.nome + ", preço: " + p.preco);
+            System.out.println("*Passando o produto*: " + p.nome + ", preço: " + p.preco);
         }
 
         System.out.println("O valor total é de: " + soma);
