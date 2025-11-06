@@ -9,8 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-#--- "Banco de Dados" de Produtos (Mock) ---
-#Em um aplicativo real, isso viria de um banco de dados
+#--- Dicionários ---
 PRODUCTS = {
     "prod_001": {"name": "Hambúrguer", "price": 25.50, "image": "🍔"},
     "prod_002": {"name": "Pizza", "price": 42.00, "image": "🍕"},
