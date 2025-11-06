@@ -3,17 +3,17 @@
 Este repositório contém um Sistema de Vendas, feito para o trabalho do professor **Sandeison**, das matérias de **Engenharia de Software** e **Estrutura de Dados**.
 
 # Integrantes e papéis no Scrum
-## Integrantes
-Adam Costa
-Davi Lopes
-Gabriel Henrique
-João Mateus
-Luiz Felipe
+## Todos os integrantes
+Adam Costa  
+Davi Lopes  
+Gabriel Henrique  
+João Mateus  
+Luiz Felipe  
 
 ## Papéis no Scrum
-Product Owner - Davi
-Scrum Master - Gabriel
-Dev Team - todo mundo
+Product Owner - Davi  
+Scrum Master - Gabriel  
+Dev Team - todo mundo  
 
 ## Papéis (no código)
 1- Sistema de cadastro de cliente
