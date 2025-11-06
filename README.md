@@ -20,7 +20,7 @@ Dev Team - todo mundo
 > FELIPE
 
 2- Sistema de cadastro de produto
-> Adam 
+> ADAM
 
 3- Sistema de venda/carrinho/lógica de vendas
 > GABRIEL
