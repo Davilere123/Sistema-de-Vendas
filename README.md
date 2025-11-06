@@ -7,10 +7,10 @@ Este repositório contém um Sistema de Vendas, feito para o trabalho do profess
 A seguir, é possível conferir os diagramas de caso de uso, classes e componentes, conforme solicitado pelo professor:
 
 ## Diagrama de caso de uso
-![Diagrama de caso de uso](.readmeimages/Caso de uso.png)
+![Diagrama de caso de uso](https://github.com/Davilere123/Sistema-de-Vendas/blob/a8d50bf6474a1c7661eb10070ebd5ad7ac48b208/.readmeimages/Caso%20de%20uso.png)
 
 ## Diagrama de classes
-![Diagrama de classes](.readmeimages/Classe UML.png)
+![Diagrama de classes](https://github.com/Davilere123/Sistema-de-Vendas/blob/a8d50bf6474a1c7661eb10070ebd5ad7ac48b208/.readmeimages/Classe%20UML.png)
 
 ## Diagrama de componentes
-![Diagrama de componentes](.readmeimages/Diagrama de componentes.png)
+![Diagrama de componentes](https://github.com/Davilere123/Sistema-de-Vendas/blob/337ce6e669d7adb2b81be0a2448d555b193e0bea/.readmeimages/Diagrama%20de%20componentes.png)
