@@ -20,16 +20,16 @@ Dev Team - todo mundo
 > FELIPE
 
 2- Sistema de cadastro de produto
->
+> Adam 
 
 3- Sistema de venda/carrinho/lógica de vendas
 > GABRIEL
 
 4- Sistema de relatório com PDF
-> JOÃO
+> JOÃO 
 
 5- Sistema de interface
->
+> DAVI
 
 # Trello
 https://trello.com/b/PTtiuhDc/trabalho
