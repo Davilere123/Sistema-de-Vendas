@@ -7,10 +7,10 @@ Este repositório contém um Sistema de Vendas, feito para o trabalho do profess
 A seguir, é possível conferir os diagramas de caso de uso, classes e componentes, conforme solicitado pelo professor:
 
 ## Diagrama de caso de uso
-![Diagrama de caso de uso](http)
+![Diagrama de caso de uso](.readmeimages/Caso de uso.png)
 
 ## Diagrama de classes
-![Diagrama de classes](http)
+![Diagrama de classes](.readmeimages/Classe UML.png)
 
 ## Diagrama de componentes
-![Diagrama de componentes](http)
+![Diagrama de componentes](.readmeimages/Diagrama de componentes.png)
