@@ -2,6 +2,9 @@
 
 Este repositório contém um Sistema de Vendas, feito para o trabalho do professor **Sandeison**, das matérias de **Engenharia de Software** e **Estrutura de Dados**.
 
+# Trello
+https://trello.com/b/PTtiuhDc/trabalho
+
 # Diagramas UML
 
 A seguir, é possível conferir os diagramas de caso de uso, classes e componentes, conforme solicitado pelo professor:
