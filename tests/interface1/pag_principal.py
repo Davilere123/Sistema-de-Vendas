@@ -21,8 +21,3 @@ saudacao = get_saudacao() #salva a saudação em uma variável
 st.title("Sistema de Vendas 🛒")
 st.header(f"{saudacao}, usuário!")
 st.write("Bem-vindo ao sistema de vendas! Essa é a versão inicial da interface.")
-
-
-
-st.sidebar.title("Menu")
-st.sidebar.write("Navegue pelas opções do sistema.")
