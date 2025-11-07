@@ -26,8 +26,3 @@ st.write("Bem-vindo ao sistema de vendas! Essa é a versão inicial da interface
 
 st.sidebar.title("Menu")
 st.sidebar.write("Navegue pelas opções do sistema.")
-st.sidebar.button("Iniciar Venda")
-st.sidebar.button("Clientes")
-st.sidebar.button("Produtos")
-st.sidebar.button("Relatórios")
-st.sidebar.button("Configurações")
