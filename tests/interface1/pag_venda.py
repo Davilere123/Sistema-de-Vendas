@@ -18,8 +18,7 @@ def initialize_sales():
 # --- MANIPULAÇÃO DO CARRINHO ---
 def add_to_cart(product_name, quantity=1):
     """Adiciona um item ao carrinho."""
-    from pag_produtos import get_product_by_name # Importação local
-    from pag_produtos import get_product_by_name # # Importação local: Evita erros de "Importação Circular".
+    from pag_produtos import get_product_by_name # Importação local: Evita erros de "Importação Circular".
     # Pede ao "gerente de produtos" os detalhes deste item.
 
     product = get_product_by_name(product_name)
@@ -43,7 +42,7 @@ def remove_from_cart(product_name):
     if product_name in st.session_state.cart:
         # 'del' é o comando Python para remover uma chave de um dicionário
         del st.session_state.cart[product_name]
-        st.toast(f"Item removido.", icon="🗑️")
+        st.toast("Item removido.", icon="🗑️")
 
 def get_cart_items():
     """Retorna os itens do carrinho com detalhes."""
@@ -58,8 +57,6 @@ def get_cart_items():
         if product:
             # Calcula o subtotal (preço x quantidade)
             subtotal = product["Preço"] * quantity
-            cart_items.append({**product, "product_name": product_name, "quantity": quantity, "subtotal": subtotal})
-            # Monta um novo dicionário com TUDO (detalhes + subtotal + qtd)
             item_detalhado = {
                 **product,  # Copia todas as chaves de 'product' (Nome, Preço, etc.)
                 "product_id": product_name, # Salva o nome como o ID
