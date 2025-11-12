@@ -12,33 +12,33 @@ def initialize_sales():
     if "orders" not in st.session_state:
         st.session_state.orders = [] # Lista de pedidos finalizados
 
-def add_to_cart(product_id, quantity=1):
+def add_to_cart(product_name, quantity=1):
     """Adiciona um item ao carrinho."""
-    from product_manager import get_product_by_id # Importação local
+    from pag_produtos import get_product_by_name # Importação local
     
-    product = get_product_by_id(product_id)
+    product = get_product_by_name(product_name)
     if product:
-        if product_id in st.session_state.cart:
-            st.session_state.cart[product_id] += quantity
+        if product_name in st.session_state.cart:
+            st.session_state.cart[product_name] += quantity
         else:
-            st.session_state.cart[product_id] = quantity
-        st.toast(f"{product['name']} adicionado ao carrinho!", icon="➕")
+            st.session_state.cart[product_name] = quantity
+        st.toast(f"{product['Nome']} adicionado ao carrinho!", icon="➕")
 
-def remove_from_cart(product_id):
+def remove_from_cart(product_name):
     """Remove um item do carrinho."""
-    if product_id in st.session_state.cart:
-        del st.session_state.cart[product_id]
+    if product_name in st.session_state.cart:
+        del st.session_state.cart[product_name]
 
 def get_cart_items():
     """Retorna os itens do carrinho com detalhes."""
-    from product_manager import get_product_by_id # Importação local
+    from pag_produtos import get_product_by_name # Importação local
     
     cart_items = []
-    for product_id, quantity in st.session_state.cart.items():
-        product = get_product_by_id(product_id)
+    for product_name, quantity in st.session_state.cart.items():
+        product = get_product_by_name(product_name)
         if product:
-            subtotal = product["price"] * quantity
-            cart_items.append({**product, "product_id": product_id, "quantity": quantity, "subtotal": subtotal})
+            subtotal = product["Preço"] * quantity
+            cart_items.append({**product, "product_name": product_name, "quantity": quantity, "subtotal": subtotal})
     return cart_items
 
 def calculate_cart_total():
@@ -50,7 +50,7 @@ def calculate_cart_total():
 
 def finalize_sale(customer_id):
     """Move o carrinho para o histórico de pedidos e o limpa."""
-    from customer_manager import get_customer_by_id # Importação local
+    from pag_clientes import get_customer_by_id # Importação local
     
     cart_items = get_cart_items()
     total = calculate_cart_total()
