@@ -16,13 +16,14 @@ Fizemos o que faltava da Sprint 1
 - Pull request revisado ✔
 - Códigos comentados ✔
 - Funções e classes básicas implementadas ✔
+- Trello e histórias de usuário organizados ✔
 
 ---
 
 ## Pendentes
 
 - Diagramas UML atualizados 🕑
-- Trello e histórias de usuário organizados 🕑
+
 
 ---
 
