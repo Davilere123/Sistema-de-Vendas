@@ -2,6 +2,26 @@
 
 Este repositório contém um Sistema de Vendas, feito para o trabalho do professor **Sandeison**, das matérias de **Engenharia de Software** e **Estrutura de Dados**.
 
+# Como executar
+## 1 - Instale o Python
+O Python está disponível no site oficial. Ele já deve estar instalado por padrão se você usa MacOS ou Linux.
+https://www.python.org/
+
+## 2 - Instale as bibliotecas
+Instale as bibliotecas Streamlit, FPDF2 e pandas utilizando o Pip, que deve estar disponível ao instalar o Python.
+```
+pip install streamlit
+pip install fpdf2
+pip install pandas
+```
+## 3 - Baixe ou clone o repositório
+Baixe o repositório utilizando o botão **<>Code** no topo da página e clicando em **Download ZIP** ou clone utilizando o Git. Então, caso tenha baixado o ZIP, extraia em algum local, de preferência um de fácil acesso.
+
+## 4 - Execute utilizando o Streamlit
+Com o Streamlit devidamente instalado, o comando `streamlit` deve estar disponível no seu terminal. Rode o sistema utilizando o comando `streamlit run "caminho\do\repositorio\baixado\src\main.py`  
+O Streamlit deve ser capaz de executar o sistema, e ele será aberto automaticamente no seu navegador.
+
+
 # Integrantes e papéis no Scrum
 ## Todos os integrantes
 Adam Costa  
