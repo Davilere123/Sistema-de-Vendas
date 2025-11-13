@@ -20,9 +20,11 @@ Baixe o repositório utilizando o botão **<>Code** no topo da página e clicand
 ## 4 - Execute utilizando o Streamlit
 Com o Streamlit devidamente instalado, o comando `streamlit` deve estar disponível no seu terminal. Rode o sistema utilizando o comando `streamlit run "caminho\do\repositorio\baixado\src\main.py"`  
   
-Substitua a parte `"caminho\do\repositorio\baixado\src\main.py"` pelo caminho que aponta para a pasta onde você deixou o repositório baixado. Caso não saiba, procure ele no seu explorador de arquivos, acesse a pasta src, digite `streamlit run`, dê um espaço e arraste o arquivo `main.py` até o terminal. O caminho deve ser colado automaticamente.  
+Substitua a parte `"caminho\do\repositorio\baixado\src\main.py"` pelo caminho que aponta para o arquivo `main.py`, que fica dentro da pasta `src` de onde você deixou o repositório baixado.  
   
-O Streamlit deve ser capaz de executar o sistema, e ele será aberto automaticamente no seu navegador.
+Caso não saiba como colocar o caminho, procure a pasta do repostiório (deve ser algo como `sistema-de-vendas-main`) no seu explorador de arquivos, acesse a pasta `src`, digite `streamlit run`, dê um espaço e arraste o arquivo `main.py` até o terminal. O caminho deve ser colado automaticamente.  
+  
+Dando **Enter** no terminal, o Streamlit deve ser capaz de executar o sistema e ele será aberto automaticamente no seu navegador.
 
 
 # Integrantes e papéis no Scrum
