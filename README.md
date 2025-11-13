@@ -15,11 +15,13 @@ pip install fpdf2
 pip install pandas
 ```
 ## 3 - Baixe ou clone o repositório
-Baixe o repositório utilizando o botão **<>Code** no topo da página e clicando em **Download ZIP** ou clone utilizando o Git. Então, caso tenha baixado o ZIP, extraia em algum local, de preferência um de fácil acesso.
+Baixe o repositório utilizando o botão **<>Code** no topo da página e clicando em **Download ZIP** ou clone utilizando o **Git**. Então, caso tenha baixado o ZIP, extraia em algum local, de preferência um de fácil acesso.
 
 ## 4 - Execute utilizando o Streamlit
 Com o Streamlit devidamente instalado, o comando `streamlit` deve estar disponível no seu terminal. Rode o sistema utilizando o comando `streamlit run "caminho\do\repositorio\baixado\src\main.py"`  
+  
 Substitua a parte `"caminho\do\repositorio\baixado\src\main.py"` pelo caminho que aponta para a pasta onde você deixou o repositório baixado. Caso não saiba, procure ele no seu explorador de arquivos, acesse a pasta src, digite `streamlit run`, dê um espaço e arraste o arquivo `main.py` até o terminal. O caminho deve ser colado automaticamente.  
+  
 O Streamlit deve ser capaz de executar o sistema, e ele será aberto automaticamente no seu navegador.
 
 
