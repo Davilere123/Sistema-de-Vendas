@@ -45,7 +45,7 @@ A seguir, é possível conferir os diagramas de caso de uso, classes e component
 ![Diagrama de classes](https://github.com/Davilere123/Sistema-de-Vendas/blob/a8d50bf6474a1c7661eb10070ebd5ad7ac48b208/.readmeimages/Classe%20UML.png)
 
 ## Diagrama de componentes
-![Diagrama de componentes]([https://github.com/Davilere123/Sistema-de-Vendas/blob/337ce6e669d7adb2b81be0a2448d555b193e0bea/.readmeimages/Diagrama%20de%20componentes.png](https://github.com/Davilere123/Sistema-de-Vendas/blob/main/docs/.readmeimages/Diagrama%20de%20componentes%20V2%201%20of%201.png))
+![Diagrama de componentes](https://github.com/Davilere123/Sistema-de-Vendas/blob/9e05f9cf6f085332084bc63b216a5427f3b04f58/docs/.readmeimages/Diagrama%20de%20componentes%20V2.png)
 
 # Descrição dos requisitos e estrutura de dados
 Podem ser encontrados na pasta **docs** do repositório
