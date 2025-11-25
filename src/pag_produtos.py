@@ -73,6 +73,7 @@ class ProdutoManager:
         else:
             st.write("Nenhum produto disponível para remover.")
 
+<<<<<<< HEAD
     def render(self) -> None:
         """Renderiza toda a página de produtos."""
         self.render_header()
@@ -98,3 +99,17 @@ __all__ = ["Produto", "ProdutoManager", "render_page"]
 
 if __name__ == "__main__":
     render_page()
+=======
+# Opção de remover produtos
+st.subheader("🗑️ Remover Produtos")
+if st.session_state.produtos:
+    nomes = [p["Nome"] for p in st.session_state.produtos]
+    produto_remover = st.selectbox("Selecione o produto para remover", nomes)
+    if st.button("Remover"):
+        st.session_state.produtos = [
+            p for p in st.session_state.produtos if p["Nome"] != produto_remover
+        ]
+        st.success(f"Produto '{produto_remover}' removido!")
+else:
+    st.write("Nenhum produto disponível para remover.")
+>>>>>>> e72ae627079931cba3bedc636c26222cb6fd77f5
