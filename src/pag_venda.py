@@ -1,231 +1,241 @@
 import streamlit as st
+from dataclasses import dataclass, asdict
+from typing import List, Optional
 import datetime
 import pandas as pd
-import pag_clientes as cm
-import pag_produtos as pm
-import pag_relatorio as rg
-# --- INICIALIZAÇÃO DO ESTADO DA SESSÃO ---
-def initialize_sales():
-    """Inicializa o carrinho e o histórico de pedidos."""
-    if "cart" not in st.session_state:
-        st.session_state.cart = {} # {product_name: quantity}
-    if "orders" not in st.session_state:
-        st.session_state.orders = [] # Lista de pedidos finalizados
-    if "orders" not in st.session_state:
-        st.session_state.orders = [] # Lista de pedidos finalizados
 
-# --- MANIPULAÇÃO DO CARRINHO ---
-def add_to_cart(product_name, quantity=1):
-    """Adiciona um item ao carrinho."""
-    from pag_produtos import get_product_by_name # Importação local: Evita erros de "Importação Circular".
-    # Pede ao "gerente de produtos" os detalhes deste item.
-
-    product = get_product_by_name(product_name)
-    # Garante que o produto existe no catálogo antes de adicionar
-    if product:
-        # Verifica se o produto já está no carrinho
-        if product_name in st.session_state.cart:
-            # Se sim, apenas soma a quantidade
-            st.session_state.cart[product_name] += quantity
-        else:
-            # Se não, adiciona a nova entrada no dicionário
-            st.session_state.cart[product_name] = quantity
-            
-        # Fornece feedback visual ao usuário (toast)
-        # Usa a chave "Nome" (Português) vinda do product_manager
-        st.toast(f"{product['Nome']} adicionado ao carrinho!", icon="➕")
-
-def remove_from_cart(product_name):
-    """Remove um item do carrinho."""
-    # Verifica se a chave (nome do produto) existe no dicionário do carrinho
-    if product_name in st.session_state.cart:
-        # 'del' é o comando Python para remover uma chave de um dicionário
-        del st.session_state.cart[product_name]
-        st.toast("Item removido.", icon="🗑️")
-
-def get_cart_items():
-    """Retorna os itens do carrinho com detalhes."""
-    from pag_produtos import get_product_by_name # Importação local
-
-    cart_items = []
-    # Itera sobre o dicionário do carrinho (item por item)
-    for product_name, quantity in st.session_state.cart.items():
-        
-        # Pede os detalhes do produto ao gerente de produtos
-        product = get_product_by_name(product_name)
-        if product:
-            # Calcula o subtotal (preço x quantidade)
-            subtotal = product["Preço"] * quantity
-            item_detalhado = {
-                **product,  # Copia todas as chaves de 'product' (Nome, Preço, etc.)
-                "product_id": product_name, # Salva o nome como o ID
-                "quantity": quantity,
-                "subtotal": subtotal
-            }
-            cart_items.append(item_detalhado)
-    return cart_items
-
-def calculate_cart_total():
-    """Calcula o total do carrinho."""
-    total = 0.0
-    
-    # Pega a lista detalhada de itens (que já tem o subtotal)
-    items = get_cart_items()
-    
-    # Apenas soma o subtotal de cada item
-    for item in items:
-        total += item["subtotal"]
-        
-    return total
-
-def finalize_sale(customer_id):
-    """Move o carrinho para o histórico de pedidos e o limpa."""
-    from pag_clientes import get_customer_by_id # Importação local
-
-    # Reunião de Dados
-    cart_items = get_cart_items() # Pega os itens detalhados
-    total = calculate_cart_total() # Calcula o total
-    customer = get_customer_by_id(customer_id) # Pega os dados do cliente
-
-    # Validação
-    # Impede a finalização de um carrinho vazio
-    if not cart_items:
-        st.error("O carrinho está vazio.")
-        return None
-        
-    if not customer:
-        st.error("Cliente não encontrado.")
-        return None
-    
-    # Criação do Pedido
-    # Monta o "recibo" final (um dicionário com tudo)
-    order = {
-        "order_id": f"PEDIDO_{len(st.session_state.orders) + 1:04d}",
-        "customer": customer, # Dicionário com dados do cliente
-        "items": cart_items,  # Lista de dicionários dos itens
-        "total": total,
-        "date": datetime.datetime.now() # Registra data e hora exatas
-    }
-
-    # Adiciona o pedido recém-criado ao histórico
-    st.session_state.orders.append(order)
-    
-    # Limpa o carrinho para a próxima venda
-    st.session_state.cart.clear()
-
-    st.success(f"Venda {order['order_id']} finalizada com sucesso!")
-    
-    # Retorna o recibo (order) para a interface
-    # A interface vai usar isso para gerar o PDF.
-    return order
+# Tentativa de integração com os módulos existentes (clientes/produtos/relatório)
 try:
-    import pag_clientes as cm
-    import pag_produtos as pm
-    import pag_relatorio as rg # Para o PDF
-except ImportError:
-    st.error("Certifique-se que os arquivos `pag_clientes.py`, `pag_produtos.py` e `pag_relatorio.py` estão na mesma pasta.")
-    st.stop()
+    import pag_clientes as pag_clientes
+except Exception:
+    pag_clientes = None
+
+try:
+    import pag_produtos as pag_produtos
+except Exception:
+    pag_produtos = None
+
+try:
+    import pag_relatorio as pag_relatorio
+except Exception:
+    pag_relatorio = None
 
 
-# --- Título e Cabeçalho ---
-st.title("Vendas 🛒")
-st.header("Aqui você pode gerenciar suas vendas.")
+@dataclass
+class CartItem:
+    nome: str
+    preco: float
+    quantidade: int
 
-# --- Inicializa os módulos ---
-# Garante que os dados de sessão existem antes de tentar usá-los
-initialize_sales() # CHAMA a sua função de inicialização
-cm.initialize_customers()
-pm.initialize_products()
+    def subtotal(self) -> float:
+        return float(self.preco) * int(self.quantidade)
 
 
-# --- Layout da Página (Colunas) ---
-col_pdv_1, col_pdv_2 = st.columns([2, 1])
+class Cart:
+    def __init__(self, session_state=None):
+        self.ss = session_state if session_state is not None else st.session_state
+        if "cart" not in self.ss:
+            self.ss.cart = {}  # key: product name -> quantity
 
-# --- Coluna da Esquerda (Produtos) ---
-with col_pdv_1:
-    st.subheader("Produtos Disponíveis")
-    
-    # Busca os produtos do módulo de produtos
-    products = pm.get_all_products()
-    
-    if not products:
-        st.info("Nenhum produto cadastrado. Vá para 'Gerenciar Produtos'.")
-    else:
-        # Exibe os produtos em colunas
-        cols_produtos = st.columns(3)
-        col_idx = 0
-        for product in products:
-            with cols_produtos[col_idx]:
-                st.markdown(f"**{product.get('icon', '📦')} {product['Nome']}**")
-                st.markdown(f"R$ {product['Preço']:.2f}")
-                
-                # --- BOTÃO DE ADICIONAR ---
-                # Ao clicar, CHAMA sua função add_to_cart
-                if st.button("Adicionar", key=f"add_{product['Nome']}"):
-                    add_to_cart(product['Nome']) # <--- CHAMA A FUNÇÃO
-                    st.rerun() # Atualiza o carrinho na outra coluna
+    def add(self, nome: str, preco: float, quantidade: int = 1):
+        if nome in self.ss.cart:
+            self.ss.cart[nome] += quantidade
+        else:
+            self.ss.cart[nome] = quantidade
 
-            col_idx = (col_idx + 1) % 3
+    def remove(self, nome: str):
+        if nome in self.ss.cart:
+            del self.ss.cart[nome]
 
-# --- Coluna da Direita (Carrinho e Checkout) ---
-with col_pdv_2:
-    st.subheader("Carrinho")
-    
-    # --- MOSTRAR ITENS NO CARRINHO ---
-    # CHAMA sua função para buscar os itens
-    cart_items = get_cart_items() 
-    
-    if not cart_items:
-        st.info("Carrinho vazio.")
-    else:
-        for item in cart_items:
-            col_item, col_remove = st.columns([4, 1])
-            with col_item:
-                st.write(f"{item['quantity']}x {item['Nome']} (R$ {item['subtotal']:.2f})")
-            with col_remove:
-                # --- BOTÃO DE REMOVER ---
-                # CHAMA sua função de remover
-                if st.button("X", key=f"remove_{item['product_id']}", help="Remover item"):
-                    remove_from_cart(item['product_id']) # <--- CHAMA A FUNÇÃO
-                    st.rerun()
-        
-        st.divider()
-        
-        # --- CALCULAR TOTAL ---
-        # CHAMA sua função de calcular o total
-        total = calculate_cart_total() 
-        st.markdown(f"### Total: **R$ {total:.2f}**")
-        
-        st.divider()
-        
-        # --- FORMULÁRIO DE CHECKOUT ---
-        # Busca os clientes do módulo de clientes
-        customers = cm.get_customers()
-        customer_options = {cid: c["nome"] for cid, c in customers.items()}
-        
-        selected_customer_id = st.selectbox(
-            "Selecione o Cliente",
-            options=customer_options.keys(),
-            format_func=lambda cid: customer_options[cid]
-        )
-        
-        # --- BOTÃO DE FINALIZAR VENDA ---
-        if st.button("Finalizar Venda", type="primary", use_container_width=True):
-            if not selected_customer_id:
-                st.error("Selecione um cliente para finalizar a venda.")
+    def clear(self):
+        self.ss.cart = {}
+
+    def items(self) -> List[CartItem]:
+        items: List[CartItem] = []
+        produtos = get_products_list()
+        prod_by_name = {p.get("Nome"): p for p in produtos}
+        for nome, qtd in self.ss.cart.items():
+            p = prod_by_name.get(nome, {})
+            preco = p.get("Preço", 0.0)
+            items.append(CartItem(nome=nome, preco=preco, quantidade=int(qtd)))
+        return items
+
+    def total(self) -> float:
+        return sum(i.subtotal() for i in self.items())
+
+
+class SaleManager:
+    def __init__(self, session_state=None):
+        self.ss = session_state if session_state is not None else st.session_state
+        if "sales" not in self.ss:
+            self.ss.sales = []
+        if "next_sale_id" not in self.ss:
+            self.ss.next_sale_id = 1
+        self.cart = Cart(self.ss)
+
+    def initialize(self):
+        # Ensure clients/products are initialized if their modules offer init functions
+        if pag_clientes and hasattr(pag_clientes, "initialize_customers"):
+            pag_clientes.initialize_customers()
+        if pag_produtos and hasattr(pag_produtos, "ProdutoManager"):
+            # instantiate once to ensure session_state.produtos exists
+            pag_produtos.ProdutoManager(session_state=self.ss)
+
+    def add_product_to_cart(self, product_name: str, quantidade: int = 1) -> bool:
+        produtos = get_products_list()
+        prod = next((p for p in produtos if p.get("Nome") == product_name), None)
+        if not prod:
+            st.error("Produto não encontrado.")
+            return False
+        estoque = int(prod.get("Quantidade", 0))
+        if estoque < quantidade:
+            st.warning(f"Estoque insuficiente para '{product_name}'. Estoque: {estoque}")
+            return False
+        self.cart.add(product_name, float(prod.get("Preço", 0.0)), quantidade)
+        st.toast(f"{product_name} adicionado ao carrinho", icon="➕")
+        return True
+
+    def remove_product_from_cart(self, product_name: str):
+        self.cart.remove(product_name)
+        st.toast("Item removido do carrinho", icon="🗑️")
+
+    def finalize_sale(self, customer_id: int) -> Optional[dict]:
+        customers = get_customers_dict()
+        customer = customers.get(customer_id)
+        if not customer:
+            st.error("Cliente não encontrado.")
+            return None
+
+        items = self.cart.items()
+        if not items:
+            st.error("O carrinho está vazio.")
+            return None
+
+        # Atualiza estoque nos produtos
+        for item in items:
+            if not decrement_product_stock(item.nome, item.quantidade):
+                st.error(f"Falha ao decrementar estoque de {item.nome}.")
+                return None
+
+        sale = {
+            "id": int(self.ss.next_sale_id),
+            "customer": customer,
+            "items": [asdict(i) for i in items],
+            "total": float(self.cart.total()),
+            "date": datetime.datetime.now(),
+        }
+        self.ss.sales.append(sale)
+        self.ss.next_sale_id += 1
+        self.cart.clear()
+        st.success(f"Venda {sale['id']} finalizada com sucesso!")
+        return sale
+
+    def list_sales(self) -> List[dict]:
+        return list(self.ss.sales)
+
+
+# ------------------ Helpers para integração ------------------
+def get_products_list() -> List[dict]:
+    # Preferir usar o manager de produtos se disponível
+    if pag_produtos and hasattr(pag_produtos, "ProdutoManager"):
+        mgr = pag_produtos.ProdutoManager(session_state=st.session_state)
+        return mgr.listar_produtos()
+    # Fallback direto no session_state
+    return list(st.session_state.get("produtos", []))
+
+
+def decrement_product_stock(nome: str, quantidade: int) -> bool:
+    # Tenta atualizar a lista de produtos em session_state
+    produtos = st.session_state.get("produtos", None)
+    if produtos is None and pag_produtos and hasattr(pag_produtos, "ProdutoManager"):
+        pag_produtos.ProdutoManager(session_state=st.session_state)
+        produtos = st.session_state.get("produtos", [])
+
+    for p in produtos:
+        if p.get("Nome") == nome:
+            estoque = int(p.get("Quantidade", 0))
+            if estoque < quantidade:
+                return False
+            p["Quantidade"] = estoque - int(quantidade)
+            return True
+    return False
+
+
+def get_customers_dict() -> dict:
+    if pag_clientes and hasattr(pag_clientes, "get_customers"):
+        return pag_clientes.get_customers()
+    return getattr(st.session_state, "customers", {})
+
+
+# ------------------ UI / Render ------------------
+def render_page(session_state: Optional[object] = None) -> SaleManager:
+    ss = session_state if session_state is not None else st.session_state
+    manager = SaleManager(session_state=ss)
+    manager.initialize()
+
+    st.title("Vendas 🛒")
+    st.header("Faça vendas - adicione itens ao carrinho e finalize.")
+
+    cols = st.columns([2, 1])
+
+    # Lado esquerdo: catálogo de produtos
+    with cols[0]:
+        st.subheader("Produtos Disponíveis")
+        produtos = get_products_list()
+        if not produtos:
+            st.info("Nenhum produto cadastrado.")
+        else:
+            cols_prod = st.columns(3)
+            for i, p in enumerate(produtos):
+                with cols_prod[i % 3]:
+                    nome = p.get("Nome")
+                    preco = p.get("Preço", 0.0)
+                    estoque = p.get("Quantidade", 0)
+                    st.markdown(f"**{nome}**")
+                    st.write(f"R$ {preco:.2f} — Estoque: {estoque}")
+                    qtd = st.number_input(f"Qtd ({nome})", min_value=1, max_value=max(1, int(estoque)), value=1, key=f"qtd_{nome}")
+                    if st.button("Adicionar", key=f"add_{nome}"):
+                        manager.add_product_to_cart(nome, int(qtd))
+
+    # Lado direito: carrinho e checkout
+    with cols[1]:
+        st.subheader("Carrinho")
+        items = manager.cart.items()
+        if not items:
+            st.info("Carrinho vazio.")
+        else:
+            for it in items:
+                c1, c2 = st.columns([4, 1])
+                with c1:
+                    st.write(f"{it.quantidade}x {it.nome} — R$ {it.subtotal():.2f}")
+                with c2:
+                    if st.button("Remover", key=f"rm_{it.nome}"):
+                        manager.remove_product_from_cart(it.nome)
+                        st.experimental_rerun()
+
+            st.divider()
+            st.markdown(f"**Total: R$ {manager.cart.total():.2f}**")
+
+            # Seleção de cliente
+            customers = get_customers_dict()
+            if customers:
+                options = list(customers.keys())
+                selected = st.selectbox("Selecione Cliente", options=options, format_func=lambda cid: customers[cid]["nome"]) 
             else:
-                # 1. CHAMA sua função de finalizar
-                order = finalize_sale(selected_customer_id) 
-                
-                if order:
-                    # 2. Gera o PDF (usando o módulo de relatório)
-                    pdf_data = rg.generate_sale_pdf(order) 
-                    
-                    # 3. Oferece o download (interface)
-                    st.download_button(
-                        label="Baixar Recibo PDF",
-                        data=pdf_data,
-                        file_name=f"{order['order_id']}_recibo.pdf",
-                        mime="application/pdf",
-                    )
-                    st.rerun()
+                selected = None
+                st.info("Nenhum cliente cadastrado. Cadastre clientes antes de finalizar.")
+
+            if st.button("Finalizar Venda", type="primary"):
+                if not selected:
+                    st.error("Selecione um cliente antes de finalizar a venda.")
+                else:
+                    sale = manager.finalize_sale(selected)
+                    if sale and pag_relatorio and hasattr(pag_relatorio, "generate_sale_pdf"):
+                        pdf = pag_relatorio.generate_sale_pdf(sale)
+                        st.download_button(label="Baixar Recibo PDF", data=pdf, file_name=f"sale_{sale['id']}.pdf", mime="application/pdf")
+
+    return manager
+
+
+if __name__ == "__main__":
+    render_page()
