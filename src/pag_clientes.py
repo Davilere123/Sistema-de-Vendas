@@ -124,6 +124,7 @@ else:
     # Converte o dicionário para um DataFrame do Pandas para fácil visualização
     # 'orient="index"' usa as chaves do dicionário (os IDs) como linhas
     df = pd.DataFrame.from_dict(customers_dict, orient='index')
+
     # Reordena colunas para uma melhor visualização (opcional)
     try:
         df = df[["id", "nome", "email", "telefone", "endereco"]]
