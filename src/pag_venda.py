@@ -4,21 +4,10 @@ from typing import List, Optional
 import datetime
 import pandas as pd
 
-# Tentativa de integração com os módulos existentes (clientes/produtos/relatório)
-try:
-    import pag_clientes as pag_clientes
-except Exception:
-    pag_clientes = None
-
-try:
-    import pag_produtos as pag_produtos
-except Exception:
-    pag_produtos = None
-
-try:
-    import pag_relatorio as pag_relatorio
-except Exception:
-    pag_relatorio = None
+# Integração com os módulos existentes (clientes/produtos/relatório)
+import pag_clientes as pag_clientes
+import pag_produtos as pag_produtos
+import pag_relatorio as pag_relatorio
 
 
 @dataclass
