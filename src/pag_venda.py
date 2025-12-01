@@ -200,7 +200,6 @@ def render_page(session_state: Optional[object] = None) -> SaleManager:
                 with c2:
                     if st.button("Remover", key=f"rm_{it.nome}"):
                         manager.remove_product_from_cart(it.nome)
-                        st.experimental_rerun()
 
             st.divider()
             st.markdown(f"**Total: R$ {manager.cart.total():.2f}**")
