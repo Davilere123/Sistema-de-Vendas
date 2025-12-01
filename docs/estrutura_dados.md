@@ -27,6 +27,14 @@ O repositório está estruturado em várias pastas:
 - src: os códigos-fonte do projeto
 - tests: códigos de teste para testar funcionalidades individuais
 - o arquivo README.md: o arquivo que contém a descrição do projeto
+  
+---
 
+## Detalhamento
+### Estruturas utilizadas:
+- Dicionários
+- Listas
 
-
+São estruturas fáceis de entender, além de funcionarem bem e cumprirem bem o seu papel no projeto.
+Os dicionários representam um objeto (como um cliente e um produto).  
+As listas foram usadas principalmente no Streamlit e no Pandas para organização e representação gráfica dos dados.
