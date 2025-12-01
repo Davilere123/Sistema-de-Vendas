@@ -27,6 +27,3 @@ O repositório está estruturado em várias pastas:
 - src: os códigos-fonte do projeto
 - tests: códigos de teste para testar funcionalidades individuais
 - o arquivo README.md: o arquivo que contém a descrição do projeto
-
-
-
