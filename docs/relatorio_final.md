@@ -1,6 +1,18 @@
 # Relatório Final
 # Papéis do Scrum
 
+- Product Owner - Davi
+- Scrum Master - Gabriel
+- Dev Team - todo mundo
+
+---
+
+- Adam Costa - Gerenciamento de produtos
+- Davi Lopes - Interface (Streamlit)
+- Gabriel Henrique - Gerenciamento de vendas
+- João Mateus - Gerenciamento de relatórios
+- Luiz Felipe - Gerenciamento de clientes
+
 ## Problemas encontrados e soluções
 ## Técnicos
 - GitHub
@@ -9,8 +21,8 @@
 - Ter todos presentes nas reuniões
 
 # Métricas de produtividade
-9/10  
-Conseguimos fazer essencialmente tudo o que planejamos no tempo certo, apesar de algumas faltas
+**9/10**  
+Conseguimos fazer essencialmente tudo o que planejamos no tempo certo, apesar de algumas faltas.
 
 # Lições aprendidas
 ## Técnicas
