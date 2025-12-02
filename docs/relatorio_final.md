@@ -17,8 +17,10 @@
 ## Técnicos
 - GitHub
 - VSCode
+Foram resolvidos através de (muita) pesquisa
 ## De equipe
 - Ter todos presentes nas reuniões
+Foram resolvidos organizando horários
 
 # Métricas de produtividade
 **9/10**  
