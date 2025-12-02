@@ -16,10 +16,10 @@
 ## Problemas encontrados e soluções
 ## Técnicos
 - GitHub
-- VSCode
+- VSCode  
 Foram resolvidos através de (muita) pesquisa
 ## De equipe
-- Ter todos presentes nas reuniões
+- Ter todos presentes nas reuniões  
 Foram resolvidos organizando horários
 
 # Métricas de produtividade
