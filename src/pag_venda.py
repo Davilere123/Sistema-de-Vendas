@@ -9,7 +9,7 @@ import pag_clientes as pag_clientes
 import pag_produtos as pag_produtos
 import pag_relatorio as pag_relatorio
 
-
+# ------------------ Item da Venda ----------------------
 @dataclass
 class CartItem:
     nome: str
@@ -20,7 +20,7 @@ class CartItem:
         # Calcula subtotal do item (preço * quantidade)
         return float(self.preco) * int(self.quantidade)
 
-
+#------------------ Carrinho -----------------------
 class Cart:
     def __init__(self, session_state=None):
         # Usa o session_state para armazenar o carrinho
@@ -59,7 +59,7 @@ class Cart:
         # Soma os subtotais para obter o total da compra
         return sum(i.subtotal() for i in self.items())
 
-
+#------------------ Gerenciador de Vendas ----------------------
 class SaleManager:
     def __init__(self, session_state=None):
         # Gerencia vendas, carrinho e IDs das vendas
