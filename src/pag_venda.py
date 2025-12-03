@@ -17,29 +17,35 @@ class CartItem:
     quantidade: int
 
     def subtotal(self) -> float:
+        # Calcula subtotal do item (preço * quantidade)
         return float(self.preco) * int(self.quantidade)
 
 
 class Cart:
     def __init__(self, session_state=None):
+        # Usa o session_state para armazenar o carrinho
         self.ss = session_state if session_state is not None else st.session_state
         if "cart" not in self.ss:
-            self.ss.cart = {}  # key: product name -> quantity
+            self.ss.cart = {}  # Armazena: nome do produto -> quantidade
 
     def add(self, nome: str, preco: float, quantidade: int = 1):
+        # Adiciona itens ao carrinho (acumula se já existir)
         if nome in self.ss.cart:
             self.ss.cart[nome] += quantidade
         else:
             self.ss.cart[nome] = quantidade
 
     def remove(self, nome: str):
+        # Remove produto do carrinho
         if nome in self.ss.cart:
             del self.ss.cart[nome]
 
     def clear(self):
+        # Esvazia totalmente o carrinho
         self.ss.cart = {}
 
     def items(self) -> List[CartItem]:
+        # Converte dados do carrinho em objetos CartItem
         items: List[CartItem] = []
         produtos = get_products_list()
         prod_by_name = {p.get("Nome"): p for p in produtos}
@@ -50,27 +56,29 @@ class Cart:
         return items
 
     def total(self) -> float:
+        # Soma os subtotais para obter o total da compra
         return sum(i.subtotal() for i in self.items())
 
 
 class SaleManager:
     def __init__(self, session_state=None):
+        # Gerencia vendas, carrinho e IDs das vendas
         self.ss = session_state if session_state is not None else st.session_state
         if "sales" not in self.ss:
-            self.ss.sales = []
+            self.ss.sales = []  # Lista de vendas realizadas
         if "next_sale_id" not in self.ss:
-            self.ss.next_sale_id = 1
+            self.ss.next_sale_id = 1  # Controle do ID da próxima venda
         self.cart = Cart(self.ss)
 
     def initialize(self):
-        # Ensure clients/products are initialized if their modules offer init functions
+        # Inicializa clientes e produtos, caso os módulos tenham essas funções
         if pag_clientes and hasattr(pag_clientes, "initialize_customers"):
             pag_clientes.initialize_customers()
         if pag_produtos and hasattr(pag_produtos, "ProdutoManager"):
-            # instantiate once to ensure session_state.produtos exists
             pag_produtos.ProdutoManager(session_state=self.ss)
 
     def add_product_to_cart(self, product_name: str, quantidade: int = 1) -> bool:
+        # Adiciona produto ao carrinho verificando estoque
         produtos = get_products_list()
         prod = next((p for p in produtos if p.get("Nome") == product_name), None)
         if not prod:
@@ -85,10 +93,12 @@ class SaleManager:
         return True
 
     def remove_product_from_cart(self, product_name: str):
+        # Remove item do carrinho e exibe toast
         self.cart.remove(product_name)
         st.toast("Item removido do carrinho", icon="🗑️")
 
     def finalize_sale(self, customer_id: int) -> Optional[dict]:
+        # Finaliza a venda: valida cliente, carrinho e diminui estoque
         customers = get_customers_dict()
         customer = customers.get(customer_id)
         if not customer:
@@ -100,12 +110,13 @@ class SaleManager:
             st.error("O carrinho está vazio.")
             return None
 
-        # Atualiza estoque nos produtos
+        # Reduz o estoque dos produtos vendidos
         for item in items:
             if not decrement_product_stock(item.nome, item.quantidade):
                 st.error(f"Falha ao decrementar estoque de {item.nome}.")
                 return None
 
+        # Monta o objeto da venda
         sale = {
             "id": int(self.ss.next_sale_id),
             "customer": customer,
@@ -113,6 +124,8 @@ class SaleManager:
             "total": float(self.cart.total()),
             "date": datetime.datetime.now(),
         }
+
+        # Salva a venda
         self.ss.sales.append(sale)
         self.ss.next_sale_id += 1
         self.cart.clear()
@@ -120,21 +133,21 @@ class SaleManager:
         return sale
 
     def list_sales(self) -> List[dict]:
+        # Retorna lista de vendas registradas
         return list(self.ss.sales)
 
 
 # ------------------ Helpers para integração ------------------
 def get_products_list() -> List[dict]:
-    # Preferir usar o manager de produtos se disponível
+    # Usa o ProdutoManager se existir, senão usa session_state diretamente
     if pag_produtos and hasattr(pag_produtos, "ProdutoManager"):
         mgr = pag_produtos.ProdutoManager(session_state=st.session_state)
         return mgr.listar_produtos()
-    # Fallback direto no session_state
     return list(st.session_state.get("produtos", []))
 
 
 def decrement_product_stock(nome: str, quantidade: int) -> bool:
-    # Tenta atualizar a lista de produtos em session_state
+    # Reduz estoque de um produto após a venda
     produtos = st.session_state.get("produtos", None)
     if produtos is None and pag_produtos and hasattr(pag_produtos, "ProdutoManager"):
         pag_produtos.ProdutoManager(session_state=st.session_state)
@@ -151,6 +164,7 @@ def decrement_product_stock(nome: str, quantidade: int) -> bool:
 
 
 def get_customers_dict() -> dict:
+    # Retorna dict de clientes cadastrados
     if pag_clientes and hasattr(pag_clientes, "get_customers"):
         return pag_clientes.get_customers()
     return getattr(st.session_state, "customers", {})
@@ -158,6 +172,7 @@ def get_customers_dict() -> dict:
 
 # ------------------ UI / Render ------------------
 def render_page(session_state: Optional[object] = None) -> SaleManager:
+    # Renderiza interface da página de vendas
     ss = session_state if session_state is not None else st.session_state
     manager = SaleManager(session_state=ss)
     manager.initialize()
@@ -182,6 +197,7 @@ def render_page(session_state: Optional[object] = None) -> SaleManager:
                     estoque = p.get("Quantidade", 0)
                     st.markdown(f"**{nome}**")
                     st.write(f"R$ {preco:.2f} — Estoque: {estoque}")
+                    # Seleciona quantidade
                     qtd = st.number_input(f"Qtd ({nome})", min_value=1, max_value=max(1, int(estoque)), value=1, key=f"qtd_{nome}")
                     if st.button("Adicionar", key=f"add_{nome}"):
                         manager.add_product_to_cart(nome, int(qtd))
@@ -213,11 +229,13 @@ def render_page(session_state: Optional[object] = None) -> SaleManager:
                 selected = None
                 st.info("Nenhum cliente cadastrado. Cadastre clientes antes de finalizar.")
 
+            # Botão finalizar venda
             if st.button("Finalizar Venda", type="primary"):
                 if not selected:
                     st.error("Selecione um cliente antes de finalizar a venda.")
                 else:
                     sale = manager.finalize_sale(selected)
+                    # Gera PDF se o módulo de relatório permitir
                     if sale and pag_relatorio and hasattr(pag_relatorio, "generate_sale_pdf"):
                         pdf = pag_relatorio.generate_sale_pdf(sale)
                         st.download_button(label="Baixar Recibo PDF", data=pdf, file_name=f"sale_{sale['id']}.pdf", mime="application/pdf")
