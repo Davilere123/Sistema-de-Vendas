@@ -7,7 +7,7 @@ Este repositório contém um Sistema de Vendas, feito para o trabalho do profess
 Este sistema está hospedado na **Streamlit Community Cloud** e pode ser acessado diretamente pelo link abaixo:  
 [Link do sistema](https://sistema-de-vendas-xkq3d6ybthka7bz5y8aazk.streamlit.app/)  
 
-## Opção 2 - baixe e roda localmente
+## Opção 2 - baixe e rode localmente
 ### 1 - Instale o Python
 O Python está disponível no site oficial. Ele já deve estar instalado por padrão se você usa MacOS ou Linux.
 https://www.python.org/
