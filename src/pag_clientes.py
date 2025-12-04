@@ -28,7 +28,7 @@ class CustomerManager:
 
     def add_customer(self, nome, email="", telefone="", endereco=""):
         if not nome:
-            st.error("Nome do cliente é obrigatório.")
+            st.error("⚠ Nome do cliente é obrigatório.")
             return None
 
         new_id = self.ss.next_customer_id
@@ -53,7 +53,7 @@ class CustomerManager:
     def remove_customer(self, customer_id):
         if customer_id in self.ss.customers:
             if customer_id == 1:
-                st.warning("Não é possível remover o 'Cliente Padrão'.")
+                st.warning("❌ Não é possível remover o 'Cliente Padrão'.")
                 return False
             del self.ss.customers[customer_id]
             st.toast(f"Cliente ID {customer_id} removido.", icon="🗑")
@@ -98,28 +98,28 @@ def remover_cliente(customer_id):
 initialize_customers()
 
 # --- Formulário para Adicionar Novo Cliente ---
-st.subheader("Cadastrar Novo Cliente")
+st.subheader("📥Cadastrar novo cliente")
 with st.form("form_cadastro_cliente", clear_on_submit=True):
-    nome = st.text_input("Nome*")
-    email = st.text_input("Email")
-    telefone = st.text_input("Telefone")
-    endereco = st.text_input("Endereço")
+    nome = st.text_input("👤 Nome*")
+    email = st.text_input("📧 Email")
+    telefone = st.text_input("📞 Telefone")
+    endereco = st.text_input("🏠 Endereço")
 
     # Botão de submit do formulário
-    submitted = st.form_submit_button("Cadastrar Cliente")
+    submitted = st.form_submit_button("💾 Cadastrar Cliente")
     if submitted:
         adicionar_cliente(nome, email, telefone, endereco)
 
 st.divider()
 
 # --- Seção para Listar e Remover Clientes ---
-st.subheader("Clientes Cadastrados")
+st.subheader("👤 Clientes Cadastrados")
 
 # Pega o dicionário de clientes
 customers_dict = get_customers()
 
 if not customers_dict:
-    st.info("Nenhum cliente cadastrado ainda.")
+    st.info("❓ Nenhum cliente cadastrado ainda.")
 else:
     # Converte o dicionário para um DataFrame do Pandas para fácil visualização
     # 'orient="index"' usa as chaves do dicionário (os IDs) como linhas
@@ -134,7 +134,7 @@ else:
     st.dataframe(df, use_container_width=True)
 
     # --- Seção de Remoção ---
-    st.markdown("### Remover Cliente")
+    st.markdown("### 🗑 Remover clientes")
 
     # Cria uma lista de opções para o selectbox
     # (Ex: "Cliente Padrão (ID: 1)")
@@ -148,9 +148,9 @@ else:
         placeholder="Selecione..."
     )
 
-    if st.button("Remover Cliente Selecionado", type="primary"):
+    if st.button("🗑 Remover Cliente Selecionado", type="primary"):
         if id_to_remove:
             if remover_cliente(id_to_remove):
                 st.rerun() # Atualiza a página para mostrar a lista sem o item
         else:
-            st.warning("Nenhum cliente selecionado.")
+            st.warning("⚠ Nenhum cliente selecionado.")

@@ -38,40 +38,40 @@ class ProdutoManager:
         st.header("Aqui você pode gerenciar seus produtos.")
 
     def render_form_cadastro(self, form_key: str = "form_cadastro") -> None:
-        st.subheader("🛒 Cadastro de Produtos")
+        st.subheader("📥 Cadastro de Produtos")
         with st.form(form_key):
-            nome = st.text_input("Nome do Produto")
-            preco = st.number_input("Preço (R$)", min_value=0.0, format="%.2f")
-            quantidade = st.number_input("Quantidade de Produtos", min_value=0, step=1)
-            enviar = st.form_submit_button("Cadastrar")
+            nome = st.text_input("🧾 Nome do Produto")
+            preco = st.number_input("💲 Preço (R$)", min_value=0.0, format="%.2f")
+            quantidade = st.number_input("📦 Quantidade de Produtos", min_value=0, step=1)
+            enviar = st.form_submit_button("💾 Cadastrar produto")
 
             if enviar:
                 if nome:
                     novo = Produto(nome=nome, preco=float(preco), quantidade=int(quantidade))
                     self.add_produto(novo)
-                    st.success(f"✅ Produto '{nome}' cadastrado com sucesso!")
+                    st.toast(f"Produto '{nome}' cadastrado com sucesso!", icon="🎉")
                 else:
                     st.warning("⚠️ O nome do produto é obrigatório!")
 
     def render_lista(self) -> None:
-        st.subheader("📋 Produtos cadastrados")
+        st.subheader("📦 Produtos cadastrados")
         produtos = self.listar_produtos()
         if produtos:
             st.table(produtos)
         else:
-            st.info("Nenhum produto cadastrado ainda.")
+            st.info("⚠ Nenhum produto cadastrado ainda.")
 
     def render_remocao(self) -> None:
-        st.subheader("🗑️ Remover Produtos")
+        st.subheader("🗑 Remover Produtos")
         produtos = self.listar_produtos()
         if produtos:
             nomes = [p.get("Nome") for p in produtos]
             produto_remover = st.selectbox("Selecione o produto para remover", nomes)
-            if st.button("Remover"):
+            if st.button("🗑 Remover"):
                 self.remove_produto_por_nome(produto_remover)
-                st.success(f"Produto '{produto_remover}' removido!")
+                st.toast(f"Produto '{produto_remover}' removido!", icon="🗑")
         else:
-            st.write("Nenhum produto disponível para remover.")
+            st.info("⚠ Nenhum produto disponível para remover.")
 
     def render(self) -> None:
         """Renderiza toda a página de produtos."""

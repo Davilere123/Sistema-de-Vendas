@@ -71,60 +71,38 @@ def generate_sale_pdf(sale: dict) -> bytes:
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 18)
-
-    # Helper to coerce values to str, decoding bytes/bytearray when needed
-    def _to_str(v):
-        if isinstance(v, (bytes, bytearray)):
-            try:
-                return v.decode("utf-8")
-            except Exception:
-                return v.decode("latin-1", errors="ignore")
-        return "" if v is None else str(v)
-
-    pdf.cell(0, 15, f"Recibo de Venda #{_to_str(sale.get('id'))}", ln=True, align="C")
+    
+    # Título do Recibo
+    pdf.cell(0, 15, f"Recibo de Venda #{sale['id']}", ln=True, align="C")
     pdf.ln(5)
 
+    # Detalhes da Venda
     pdf.set_font("Arial", size=12)
-    cliente_nome = _to_str(sale.get('customer', {}).get('nome'))
-    # Format date safely
-    date_obj = sale.get('date')
-    try:
-        data_str = date_obj.strftime('%d/%m/%Y %H:%M:%S') if hasattr(date_obj, 'strftime') else _to_str(date_obj)
-    except Exception:
-        data_str = _to_str(date_obj)
-    pdf.cell(0, 8, f"Cliente: {cliente_nome}", ln=True)
-    pdf.cell(0, 8, f"Data: {data_str}", ln=True)
+    pdf.cell(0, 8, f"Cliente: {sale['customer']['nome']}", ln=True)
+    pdf.cell(0, 8, f"Data: {sale['date'].strftime('%d/%m/%Y %H:%M:%S')}", ln=True)
     pdf.ln(5)
 
+    # Detalhes dos Itens
     pdf.set_font("Arial", "B", 12)
     pdf.cell(10, 8, "Qtde", border=1)
     pdf.cell(80, 8, "Produto", border=1)
     pdf.cell(40, 8, "Preço Unitário", border=1)
     pdf.cell(40, 8, "Subtotal", border=1, ln=True)
-
+    
     pdf.set_font("Arial", size=12)
-    for item in sale.get("items", []):
-        nome_item = _to_str(item.get("nome"))
-        preco = float(item.get("preco", 0.0))
-        qtd = int(item.get("quantidade", 0))
-        subtotal = preco * qtd
-        pdf.cell(10, 8, _to_str(qtd), border=1)
-        pdf.cell(80, 8, nome_item, border=1)
-        pdf.cell(40, 8, f"R$ {preco:.2f}", border=1)
+    for item in sale["items"]:
+        subtotal = float(item["preco"]) * int(item["quantidade"])
+        pdf.cell(10, 8, str(item["quantidade"]), border=1)
+        pdf.cell(80, 8, item["nome"], border=1)
+        pdf.cell(40, 8, f"R$ {item['preco']:.2f}", border=1)
         pdf.cell(40, 8, f"R$ {subtotal:.2f}", border=1, ln=True)
-
+    
     pdf.ln(10)
     pdf.set_font("Arial", "B", 16)
-    total_val = float(sale.get('total', 0.0))
-    pdf.cell(0, 10, f"TOTAL GERAL: R$ {total_val:.2f}", ln=True, align="R")
+    pdf.cell(0, 10, f"TOTAL GERAL: R$ {sale['total']:.2f}", ln=True, align="R")
 
-    pdf_data = pdf.output()
-    # Ensure we always return native bytes to Streamlit
-    if isinstance(pdf_data, bytearray):
-        return bytes(pdf_data)
-    if isinstance(pdf_data, str):
-        return pdf_data.encode('latin-1')
-    return pdf_data
+    # Retorna o conteúdo binário do PDF
+    return pdf.output(dest="S")
 
 # ----------------------------------------------------
 # UI / RENDER (Função de renderização da página de relatório)
@@ -137,16 +115,15 @@ def render_page(session_state: Optional[object] = None) -> RelatorioManager:
     ss = session_state if session_state is not None else st.session_state
     manager = RelatorioManager(session_state=ss)
 
-    st.title("📊 Relatórios")
-    st.header("Aqui você pode gerenciar relatórios das suas vendas")
-    st.markdown("### 🔎 Análise das vendas registradas")
+    st.title("Relatório de Vendas")
+    st.header("Análise das Vendas Registradas")
 
     # Obtém os dados de vendas
-    days_filter = st.slider("⏱ Filtrar vendas pelos últimos N dias:", min_value=1, max_value=365, value=30)
+    days_filter = st.slider("Filtrar vendas pelos últimos N dias:", min_value=1, max_value=365, value=30)
     vendas_df = manager.get_sales_dataframe(days=days_filter)
 
     if vendas_df.empty:
-        st.info("⚠ Nenhuma venda registrada no período selecionado.")
+        st.info("Nenhuma venda registrada no período selecionado.")
         return manager
 
     # Calcular resumo
@@ -165,7 +142,7 @@ def render_page(session_state: Optional[object] = None) -> RelatorioManager:
     st.markdown(f"**Período analisado:** {data_limite.strftime('%d/%m/%Y')} até {hoje.strftime('%d/%m/%Y')}")
     st.dataframe(vendas_df[["id", "customer", "valor_venda", "quantidade", "data_venda"]])
 
-    if st.button("📄 Gerar Relatório de Análise (PDF)", type="primary"):
+    if st.button("Gerar Relatório de Análise (PDF)", type="primary"):
         # Lógica de geração do PDF de ANÁLISE (adaptada do seu segundo código)
         pdf = FPDF()
         pdf.add_page()
@@ -186,17 +163,11 @@ def render_page(session_state: Optional[object] = None) -> RelatorioManager:
         for _, row in vendas_df.sort_values(by="data_venda", ascending=False).head(10).iterrows():
             pdf.cell(0, 7, f"Venda {row['id']} - {row['data_venda'].strftime('%d/%m/%Y')}: R$ {row['valor_venda']:.2f} (Cliente: {row['customer'].get('nome', 'N/A')})", ln=True)
 
-        result = pdf.output()
-        if type(result).__name__ == 'str':
-            pdf_output = result.encode('latin-1')
-        else:
-            pdf_output = result
+        pdf_output = pdf.output(dest="S")
 
-        if not isinstance(pdf_output, bytes):
-            pdf_output = bytes(pdf_output)
-        b64 = base64.b64encode(pdf_output).decode()
         # Criar link para download
-        href = f'<a href="data:application/octet-stream;base64,{b64}" download="relatorio_vendas_{days_filter}dias.pdf">📥 Clique aqui para baixar o PDF</a>'
+        b64 = base64.b64encode(pdf_output).decode()
+        href = f'<a href="data:application/octet-stream;base64,{b64}" download="relatorio_vendas_{days_filter}dias.pdf">Clique aqui para baixar o PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
     
     return manager

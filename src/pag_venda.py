@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from typing import List, Optional
 import datetime
 import pandas as pd
+import base64
 
 # Integração com os módulos existentes (clientes/produtos/relatório)
 import pag_clientes as pag_clientes
@@ -82,11 +83,11 @@ class SaleManager:
         produtos = get_products_list()
         prod = next((p for p in produtos if p.get("Nome") == product_name), None)
         if not prod:
-            st.error("Produto não encontrado.")
+            st.error("❌ Produto não encontrado.")
             return False
         estoque = int(prod.get("Quantidade", 0))
         if estoque < quantidade:
-            st.warning(f"Estoque insuficiente para '{product_name}'. Estoque: {estoque}")
+            st.warning(f"⚠ Estoque insuficiente para '{product_name}'. Estoque: {estoque}")
             return False
         self.cart.add(product_name, float(prod.get("Preço", 0.0)), quantidade)
         st.toast(f"{product_name} adicionado ao carrinho", icon="➕")
@@ -102,18 +103,18 @@ class SaleManager:
         customers = get_customers_dict()
         customer = customers.get(customer_id)
         if not customer:
-            st.error("Cliente não encontrado.")
+            st.error("❌ Cliente não encontrado.")
             return None
 
         items = self.cart.items()
         if not items:
-            st.error("O carrinho está vazio.")
+            st.error("❌ O carrinho está vazio.")
             return None
 
         # Reduz o estoque dos produtos vendidos
         for item in items:
             if not decrement_product_stock(item.nome, item.quantidade):
-                st.error(f"Falha ao decrementar estoque de {item.nome}.")
+                st.error(f"❌ Falha ao decrementar estoque de {item.nome}.")
                 return None
 
         # Monta o objeto da venda
@@ -129,7 +130,7 @@ class SaleManager:
         self.ss.sales.append(sale)
         self.ss.next_sale_id += 1
         self.cart.clear()
-        st.success(f"Venda {sale['id']} finalizada com sucesso!")
+        st.success(f"🎉 Venda {sale['id']} finalizada com sucesso!")
         return sale
 
     def list_sales(self) -> List[dict]:
@@ -177,17 +178,17 @@ def render_page(session_state: Optional[object] = None) -> SaleManager:
     manager = SaleManager(session_state=ss)
     manager.initialize()
 
-    st.title("Vendas 🛒")
+    st.title("💲 Vendas")
     st.header("Faça vendas - adicione itens ao carrinho e finalize.")
 
     cols = st.columns([2, 1])
 
     # Lado esquerdo: catálogo de produtos
     with cols[0]:
-        st.subheader("Produtos Disponíveis")
+        st.subheader("📦 Produtos Disponíveis")
         produtos = get_products_list()
         if not produtos:
-            st.info("Nenhum produto cadastrado.")
+            st.info("⚠ Nenhum produto cadastrado.")
         else:
             cols_prod = st.columns(3)
             for i, p in enumerate(produtos):
@@ -204,41 +205,41 @@ def render_page(session_state: Optional[object] = None) -> SaleManager:
 
     # Lado direito: carrinho e checkout
     with cols[1]:
-        st.subheader("Carrinho")
+        st.subheader("🛒 Carrinho")
         items = manager.cart.items()
         if not items:
-            st.info("Carrinho vazio.")
+            st.info("⚠ Carrinho vazio.")
         else:
             for it in items:
                 c1, c2 = st.columns([4, 1])
                 with c1:
                     st.write(f"{it.quantidade}x {it.nome} — R$ {it.subtotal():.2f}")
                 with c2:
-                    if st.button("Remover", key=f"rm_{it.nome}"):
+                    if st.button("🗑 Remover", key=f"rm_{it.nome}"):
                         manager.remove_product_from_cart(it.nome)
 
             st.divider()
-            st.markdown(f"**Total: R$ {manager.cart.total():.2f}**")
+            st.markdown(f"**🏧 Total: R$ {manager.cart.total():.2f}**")
 
             # Seleção de cliente
             customers = get_customers_dict()
             if customers:
                 options = list(customers.keys())
-                selected = st.selectbox("Selecione Cliente", options=options, format_func=lambda cid: customers[cid]["nome"]) 
+                selected = st.selectbox("Selecione um cliente", options=options, format_func=lambda cid: customers[cid]["nome"]) 
             else:
                 selected = None
-                st.info("Nenhum cliente cadastrado. Cadastre clientes antes de finalizar.")
+                st.info("⚠ Nenhum cliente cadastrado. Cadastre clientes antes de finalizar.")
 
             # Botão finalizar venda
-            if st.button("Finalizar Venda", type="primary"):
+            if st.button("💸 Finalizar Venda", type="primary"):
                 if not selected:
-                    st.error("Selecione um cliente antes de finalizar a venda.")
+                    st.error("⚠ Selecione um cliente antes de finalizar a venda.")
                 else:
                     sale = manager.finalize_sale(selected)
                     # Gera PDF se o módulo de relatório permitir
                     if sale and pag_relatorio and hasattr(pag_relatorio, "generate_sale_pdf"):
                         pdf = pag_relatorio.generate_sale_pdf(sale)
-                        st.download_button(label="Baixar Recibo PDF", data=pdf, file_name=f"sale_{sale['id']}.pdf", mime="application/pdf")
+                        st.download_button(label="📄 Baixar Recibo PDF", data=pdf, file_name=f"sale_{sale['id']}.pdf", mime="application/pdf")
 
     return manager
 
