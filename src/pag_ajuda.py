@@ -1,6 +1,6 @@
 import streamlit as st
 
-url_github = "https://github.com/Davilere123/Sistema-de-Vendas"
+url_github = "https://github.com/Davilere123/Sistema-de-Vendas/wiki"
 
 st.title("Obter ajuda 🆘")
 st.header("Aqui você pode encontrar ajuda.")
