@@ -3,21 +3,26 @@
 Este repositório contém um Sistema de Vendas, feito para o trabalho do professor **Sandeison**, das matérias de **Engenharia de Software** e **Estrutura de Dados**.
 
 # Como executar
-## 1 - Instale o Python
+## Opção 1 - abra o link
+Este sistema está hospedado na **Streamlit Community Cloud** e pode ser acessado diretamente pelo link abaixo:  
+[Link do sistema](https://sistema-de-vendas-xkq3d6ybthka7bz5y8aazk.streamlit.app/)  
+
+## Opção 2 - baixe e roda localmente
+### 1 - Instale o Python
 O Python está disponível no site oficial. Ele já deve estar instalado por padrão se você usa MacOS ou Linux.
 https://www.python.org/
 
-## 2 - Instale as bibliotecas
+### 2 - Instale as bibliotecas
 Instale as bibliotecas Streamlit, FPDF2 e pandas utilizando o Pip, que deve estar disponível ao instalar o Python.
 ```
 pip install streamlit
 pip install fpdf2
 pip install pandas
 ```
-## 3 - Baixe ou clone o repositório
+### 3 - Baixe ou clone o repositório
 Baixe o repositório utilizando o botão **<>Code** no topo da página e clicando em **Download ZIP** ou clone utilizando o **Git**. Então, caso tenha baixado o ZIP, extraia em algum local, de preferência um de fácil acesso.
 
-## 4 - Execute utilizando o Streamlit
+### 4 - Execute utilizando o Streamlit
 Com o Streamlit devidamente instalado, o comando `streamlit` deve estar disponível no seu terminal. Rode o sistema utilizando o comando `streamlit run "caminho\do\repositorio\baixado\src\main.py"`  
   
 Substitua a parte `"caminho\do\repositorio\baixado\src\main.py"` pelo caminho que aponta para o arquivo `main.py`, que fica dentro da pasta `src` de onde você deixou o repositório baixado.  
